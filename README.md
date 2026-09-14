@@ -118,7 +118,19 @@ Never commit the bot token. If it is ever exposed, revoke it in BotFather with
 
 ### Keeping it running
 
-A minimal systemd unit for a Linux server (adjust paths and user):
+Option A, Docker on any machine (laptop, Raspberry Pi, or a small VPS). The
+database lives in `./data` on the host so it survives rebuilds.
+
+```bash
+cp .env.example .env      # fill in ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_USER_IDS
+docker compose up -d --build
+docker compose logs -f    # watch it start; Ctrl+C leaves it running
+```
+
+Update later with `git pull && docker compose up -d --build`. Stop with
+`docker compose down`. Back up by copying `data/fitness.db`.
+
+Option B, systemd without Docker on a Linux server (adjust paths and user):
 
 ```ini
 [Unit]
@@ -141,6 +153,9 @@ WantedBy=multi-user.target
 sudo systemctl enable --now fitness-coach
 journalctl -u fitness-coach -f
 ```
+
+Either way, only one copy of the bot may run at a time. Telegram delivers each
+message to a single polling process, so a second instance makes both misbehave.
 
 ## Tests
 

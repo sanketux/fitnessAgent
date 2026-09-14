@@ -1,0 +1,8 @@
+services:
+  coach:
+    build: .
+    container_name: fitness-coach
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/data
