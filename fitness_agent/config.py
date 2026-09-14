@@ -7,7 +7,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-MODEL = os.environ.get("FITNESS_AGENT_MODEL", "claude-opus-5")
+MODEL = os.environ.get("FITNESS_AGENT_MODEL", "claude-sonnet-5")
 EFFORT = os.environ.get("FITNESS_AGENT_EFFORT", "medium")
 MAX_TOKENS = int(os.environ.get("FITNESS_AGENT_MAX_TOKENS", "16000"))
 TIMEZONE = os.environ.get("FITNESS_AGENT_TZ", "Asia/Kolkata")

@@ -15,7 +15,7 @@ behaves. The code does not need to change.
 ```
 you  ──chat──▶  Coach (fitness_agent/agent.py)
                   │  system prompt = operating manual (cached) + today's state
-                  │  model: claude-opus-5, adaptive thinking, effort=medium
+                  │  model: claude-sonnet-5, adaptive thinking, effort=medium
                   ▼
                Claude ──tool calls──▶ fitness_agent/tools.py ──▶ SQLite (data/fitness.db)
 ```
@@ -74,11 +74,11 @@ Environment overrides: `FITNESS_AGENT_MODEL`, `FITNESS_AGENT_EFFORT`
 
 ### Choosing a model
 
-The default is `claude-opus-5`. For a cheaper daily coach set
-`FITNESS_AGENT_MODEL=claude-sonnet-5`: same tools, caching, thinking and
-effort settings, at about 60 percent lower token prices. The server-side
-refusal fallback is only enabled automatically on the Opus 5 and Fable
-families; `FITNESS_AGENT_FALLBACK=1` forces it on, `0` turns it off.
+The default is `claude-sonnet-5`, which handles daily macro tallies and
+coaching well at low cost. Set `FITNESS_AGENT_MODEL=claude-opus-5` for the
+stronger model at about 2.5x the token price; everything else stays the same.
+The server-side refusal fallback is only enabled automatically on the Opus 5
+and Fable families; `FITNESS_AGENT_FALLBACK=1` forces it on, `0` turns it off.
 
 ## Telegram bot
 
