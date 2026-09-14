@@ -5,7 +5,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# In a source checkout, paths default to the repo root. When the package is
+# installed into site-packages (e.g. in Docker), fall back to the working directory.
+_PACKAGE_PARENT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = _PACKAGE_PARENT if (_PACKAGE_PARENT / "pyproject.toml").exists() else Path.cwd()
 
 MODEL = os.environ.get("FITNESS_AGENT_MODEL", "claude-sonnet-5")
 EFFORT = os.environ.get("FITNESS_AGENT_EFFORT", "medium")
