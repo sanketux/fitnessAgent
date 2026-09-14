@@ -50,6 +50,12 @@ class Coach:
     messages: list[dict[str, Any]] = field(default_factory=list)
     usage: Usage = field(default_factory=Usage)
 
+    @staticmethod
+    def fallback_params() -> dict[str, Any]:
+        if config.use_fallback(config.MODEL):
+            return {"betas": [config.FALLBACK_BETA], "fallbacks": "default"}
+        return {}
+
     def send(self, user_text: str) -> str:
         """Send one user turn and return the assistant's final text."""
         self.messages.append({"role": "user", "content": user_text})
@@ -62,11 +68,10 @@ class Coach:
             messages=self.messages,
             thinking={"type": "adaptive"},
             output_config={"effort": config.EFFORT},
-            betas=[config.FALLBACK_BETA],
-            fallbacks="default",
             cache_control={"type": "ephemeral"},
             stream=True,
             max_iterations=self.max_iterations,
+            **self.fallback_params(),
         )
 
         final_text: list[str] = []

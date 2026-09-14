@@ -72,6 +72,14 @@ Environment overrides: `FITNESS_AGENT_MODEL`, `FITNESS_AGENT_EFFORT`
 (`low`/`medium`/`high`), `FITNESS_AGENT_DB`, `FITNESS_AGENT_CONTEXT`,
 `FITNESS_AGENT_TZ`. See `.env.example`.
 
+### Choosing a model
+
+The default is `claude-opus-5`. For a cheaper daily coach set
+`FITNESS_AGENT_MODEL=claude-sonnet-5`: same tools, caching, thinking and
+effort settings, at about 60 percent lower token prices. The server-side
+refusal fallback is only enabled automatically on the Opus 5 and Fable
+families; `FITNESS_AGENT_FALLBACK=1` forces it on, `0` turns it off.
+
 ## Telegram bot
 
 The same coach, reachable from your phone. It runs as a long-lived process on

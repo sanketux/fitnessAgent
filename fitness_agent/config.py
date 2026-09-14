@@ -31,4 +31,13 @@ TELEGRAM_CHECKIN_TIME = os.environ.get("TELEGRAM_CHECKIN_TIME", "21:00")
 
 # Server-side refusal fallback: if the safety classifiers decline a request,
 # the API re-runs it on Anthropic's recommended fallback model in the same call.
+# Documented for the Opus 5 and Fable families; off for other models unless
+# FITNESS_AGENT_FALLBACK=1 forces it (or =0 disables it).
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
+
+
+def use_fallback(model: str = MODEL) -> bool:
+    forced = os.environ.get("FITNESS_AGENT_FALLBACK")
+    if forced is not None:
+        return forced.strip() not in {"", "0", "false", "no"}
+    return model.startswith(("claude-opus-5", "claude-fable"))
