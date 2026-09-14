@@ -30,6 +30,7 @@ you  ──chat──▶  Coach (fitness_agent/agent.py)
 - `fitness_agent/agent.py` runs one conversation with the SDK tool runner,
   streaming replies and mirroring the history so multi-turn chat works.
 - `fitness_agent/cli.py` is the terminal check-in.
+- `fitness_agent/telegram_bot.py` is the Telegram front end.
 
 ## Setup
 
@@ -71,6 +72,68 @@ Environment overrides: `FITNESS_AGENT_MODEL`, `FITNESS_AGENT_EFFORT`
 (`low`/`medium`/`high`), `FITNESS_AGENT_DB`, `FITNESS_AGENT_CONTEXT`,
 `FITNESS_AGENT_TZ`. See `.env.example`.
 
+## Telegram bot
+
+The same coach, reachable from your phone. It runs as a long-lived process on
+any machine with internet access (a laptop that stays on, a Raspberry Pi, or a
+small VPS).
+
+1. Create a bot with [@BotFather](https://t.me/BotFather) and copy the token.
+2. Install the Telegram extra and set the environment:
+
+   ```bash
+   pip install -e ".[telegram]"
+   export ANTHROPIC_API_KEY=sk-ant-...
+   export TELEGRAM_BOT_TOKEN=123456:ABC...
+   ```
+
+3. Start it and send `/start` to your bot. On the first message it replies with
+   your numeric Telegram user id and refuses to coach until you lock it down:
+
+   ```bash
+   fitness-agent-telegram
+   # then, after reading your id from the bot's reply:
+   export TELEGRAM_ALLOWED_USER_IDS=<your id>
+   fitness-agent-telegram
+   ```
+
+4. `/start` or `/checkin` opens the day's check-in. Plain messages go to the
+   coach. `/new` resets the conversation (the database keeps the logs).
+
+By default the bot also opens the check-in for you every day at 21:00
+Asia/Kolkata. Change it with `TELEGRAM_CHECKIN_TIME=20:30`, or set it to an
+empty string to turn it off. The reminder only starts once you have messaged
+the bot at least once, because it needs your chat id.
+
+Never commit the bot token. If it is ever exposed, revoke it in BotFather with
+`/revoke` and set the new one.
+
+### Keeping it running
+
+A minimal systemd unit for a Linux server (adjust paths and user):
+
+```ini
+[Unit]
+Description=Fitness coach Telegram bot
+After=network-online.target
+
+[Service]
+User=sanket
+WorkingDirectory=/home/sanket/fitnessAgent
+EnvironmentFile=/home/sanket/fitnessAgent/.env
+ExecStart=/home/sanket/fitnessAgent/.venv/bin/fitness-agent-telegram
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable --now fitness-coach
+journalctl -u fitness-coach -f
+```
+
 ## Tests
 
 ```bash
@@ -88,7 +151,7 @@ database (`data/`) is git-ignored.
 
 ## Next steps
 
-- Wrap the `Coach` class in a Telegram bot or small web app for phone access.
+- WhatsApp: put the WhatsApp Business Cloud API or Twilio in front of `CoachBot`.
 - Add a weekly review command that runs `get_weekly_trends` and produces a
   Monday summary.
 - Build a small eval set of realistic check-ins to test prompt changes against.

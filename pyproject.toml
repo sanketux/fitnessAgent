@@ -12,10 +12,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+telegram = ["python-telegram-bot[job-queue]>=22"]
+dev = ["pytest>=8", "python-telegram-bot[job-queue]>=22"]
 
 [project.scripts]
 fitness-agent = "fitness_agent.cli:main"
+fitness-agent-telegram = "fitness_agent.telegram_bot:main"
 
 [tool.setuptools.packages.find]
 include = ["fitness_agent*"]

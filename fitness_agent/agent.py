@@ -43,6 +43,7 @@ class Coach:
     client: anthropic.Anthropic
     db: Database
     manual: str | None = None
+    extra_instructions: str = ""
     on_text: Callable[[str], None] = lambda s: print(s, end="", flush=True)
     on_tool: Callable[[str], None] | None = None
     max_iterations: int = 12
@@ -56,7 +57,7 @@ class Coach:
         runner = self.client.beta.messages.tool_runner(
             model=config.MODEL,
             max_tokens=config.MAX_TOKENS,
-            system=build_system(self.db, today(), self.manual),
+            system=build_system(self.db, today(), self.manual, self.extra_instructions),
             tools=ALL_TOOLS,
             messages=self.messages,
             thinking={"type": "adaptive"},

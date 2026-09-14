@@ -46,13 +46,13 @@ def load_manual(path: Path | None = None) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def static_block(manual: str | None = None) -> dict[str, Any]:
+def static_block(manual: str | None = None, extra_instructions: str = "") -> dict[str, Any]:
     manual = manual if manual is not None else load_manual()
-    return {
-        "type": "text",
-        "text": ROLE_PREAMBLE + "\n\n<operating_manual>\n" + manual + "\n</operating_manual>",
-        "cache_control": {"type": "ephemeral"},
-    }
+    text = ROLE_PREAMBLE
+    if extra_instructions:
+        text += "\n" + extra_instructions.strip() + "\n"
+    text += "\n\n<operating_manual>\n" + manual + "\n</operating_manual>"
+    return {"type": "text", "text": text, "cache_control": {"type": "ephemeral"}}
 
 
 def dynamic_block(db: Database, today: date) -> dict[str, Any]:
@@ -72,5 +72,7 @@ def dynamic_block(db: Database, today: date) -> dict[str, Any]:
     return {"type": "text", "text": "\n".join(lines)}
 
 
-def build_system(db: Database, today: date, manual: str | None = None) -> list[dict[str, Any]]:
-    return [static_block(manual), dynamic_block(db, today)]
+def build_system(
+    db: Database, today: date, manual: str | None = None, extra_instructions: str = ""
+) -> list[dict[str, Any]]:
+    return [static_block(manual, extra_instructions), dynamic_block(db, today)]

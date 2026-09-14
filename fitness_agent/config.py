@@ -20,6 +20,15 @@ CONTEXT_PATH = Path(
     )
 )
 
+# Telegram bot (see fitness_agent/telegram_bot.py). The token is read only from
+# the environment and must never be committed.
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_ALLOWED_USER_IDS = frozenset(
+    int(x) for x in os.environ.get("TELEGRAM_ALLOWED_USER_IDS", "").replace(",", " ").split() if x.strip()
+)
+# Daily check-in reminder, local time in TIMEZONE. Set to "" to disable.
+TELEGRAM_CHECKIN_TIME = os.environ.get("TELEGRAM_CHECKIN_TIME", "21:00")
+
 # Server-side refusal fallback: if the safety classifiers decline a request,
 # the API re-runs it on Anthropic's recommended fallback model in the same call.
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
